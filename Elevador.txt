@@ -1,0 +1,84 @@
+---COMPONENTE Latch
+Library Ieee;
+use Ieee.std_logic_1164.all;
+
+Entity componente_latch is
+	port(Reset,Set : in std_logic;
+		   Q : out std_logic);
+
+end componente_latch;
+
+Architecture RS of componente_latch is
+	signal  q1  : std_logic;
+		begin
+		
+			q1<= Set nor Q ;
+			Q <= Reset nor q1 ;
+
+end RS;
+
+---Programa
+Library Ieee;
+use Ieee.std_logic_1164.all;
+Entity Proyecto_final is
+	port (   S : in std_logic_vector (2 downto 0);
+		     B : in std_logic_vector (2 downto 0);
+			 P : out std_logic_vector (1 downto 0);
+		     M : out std_logic_vector (1 downto 0));
+
+end Proyecto_final;
+
+Architecture structural of Proyecto_final is
+signal S0,S1,S2,S3,R0,R1,R2,R3,Q0,Q1,Q2,Q3 : std_logic;
+
+component componente_latch
+	port(Reset,Set : in std_logic;
+		   Q : out std_logic);
+end component;
+
+begin
+ 	S0 <= B(1) and (not S(2));
+	R0 <= S(1);
+	S1 <= B(2);
+	R1 <= S(2);
+	S2 <= B(0) and (S(1) xor S(2));
+	R2 <= S(0);
+	S3 <= B(1) and (not S(0));
+	R3 <= S(1);
+
+F0 : componente_latch
+		port map (
+			Reset => R0, 
+			Set => S0,
+			Q => Q0
+			);
+
+F1 : componente_latch
+		port map (
+			Reset => R1, 
+			Set => S1,
+			Q => Q1
+			);
+
+F2 : componente_latch
+		port map (
+			Reset => R2, 
+			Set => S2,
+			Q => Q2
+			);
+
+F3 : componente_latch
+		port map (
+			Reset => R3, 
+			Set => S3,
+			Q => Q3
+			);
+
+	M(0) <= Q2 xor Q3;
+	M(1) <= Q0 xor Q1;
+
+	P<= "01" when (S(2) = '0' and S(1)= '0' and S(0)= '1') else
+		"10" when (S(2) = '0' and S(1)= '1' and S(0)= '0') else
+		"11" when (S(2) = '1' and S(1)= '0' and S(0)= '0') else
+		"00";
+end structural;
